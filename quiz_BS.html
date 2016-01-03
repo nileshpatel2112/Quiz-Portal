@@ -61,6 +61,7 @@
 	  var uname = document.getElementById("txtname").value;
       if (pos >= jsondata.length) {
 	  	$("#ans").hide();
+		$("#removeque").hide();
         test.innerHTML = "<h2>"+ uname + " You got " + ryt + " of " + jsondata.length + " questions correct</h2>";
         document.getElementById("test_status").innerHTML = "Test Completed";
         pos = 0;
@@ -99,7 +100,7 @@
 			remove_que(pos);
 		});
 	  }
-    }
+	}
 }
     function checkAnswer() {
       if (!$('input[name=choices]').is(":checked")) {
