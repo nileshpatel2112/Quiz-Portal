@@ -1,0 +1,251 @@
+<html>
+
+<head>
+  <title>quiz</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="css/jquery-css.css">
+  <script src="js/jquery-1.7.1.min.js"></script>
+  <script src="js/jquery-ui 1.10.2.js	"></script>
+
+  <style>
+	#dialog{
+		background:#2952a3;
+		border: 1px solid #2952a3;
+		color: #FFFFFF;
+		font-weight: bold;
+	}
+
+  </style>
+
+  <script>
+    var jsondata = [];
+	var	existing_que = [];
+    var pos = 0, test, choice, choices, ryt = 0, oldjson;
+    var getQue = [];
+	
+    $.getJSON('json/queslist.json', function(data) {
+      jsondata = data.questions;
+	  
+      oldjson = data.questions.length;
+	   
+	  getQue = JSON.parse(localStorage.getItem("queAns"));
+      if (getQue != null) {
+        for (var i = 0; i < getQue.length; i++) {
+          jsondata.push({
+            que: getQue[i].Question,
+            chA: getQue[i].A,
+            chB: getQue[i].B,
+            chC: getQue[i].C,
+            chD: getQue[i].D,
+            correct: getQue[i].corr
+          });
+        }
+      }
+
+      $("#start").click('click', showque);
+    });
+	
+    $(document).ready(function() {
+      $("#progbar, #ans, #reset, #removeque").hide();
+	  $( "#start, #reset, #add, #save, #clear, #ans, #removeque" ).button();
+    });
+
+    function showque() {
+	var username=document.getElementById("txtname").value;
+	if(username == "" ){
+	alert("Please Enter Your Name");
+	 }else{
+      $("#start, #intro, #add").hide();
+      $("#progbar, #reset, #ans").show();
+      var test = document.getElementById("test");
+	  var uname = document.getElementById("txtname").value;
+      if (pos >= jsondata.length) {
+	  	$("#ans").hide();
+        test.innerHTML = "<h2>"+ uname + " You got " + ryt + " of " + jsondata.length + " questions correct</h2>";
+        document.getElementById("test_status").innerHTML = "Test Completed";
+        pos = 0;
+        ryt = 0;
+        return false;
+      }
+      document.getElementById("test_status").innerHTML = "Question " + (pos + 1) + " of " + jsondata.length;
+	  var output = "<div id='print' class='panel panel-primary'>"+
+					"<div class='panel-heading'>"+
+					    "<h3 class='panel-title'>"+ jsondata[pos].que + "</h3>"+
+					"</div>"+
+		  
+          "<div class='panel-body'>"+
+            "<div class='radio'>"+
+              "&nbsp; &nbsp;<li>"+
+                "<input type='radio' name='choices' value='A'>" + jsondata[pos].chA +
+            "</li></div>"+
+            "<div class='radio'>"+
+              "&nbsp; &nbsp;<li>"+
+                "<input type='radio' name='choices' value='B'>" + jsondata[pos].chB +
+            "</li></div>"+
+			"<div class='radio'>"+
+              "&nbsp; &nbsp;<li>"+
+                "<input type='radio' name='choices' value='C'>" + jsondata[pos].chC +
+            "</li></div>"+
+			"<div class='radio'>"+
+              "&nbsp; &nbsp;<li>"+
+                "<input type='radio' name='choices' value='D'>" + jsondata[pos].chD +
+            "</li></div>"+
+		"</div>"+
+	"</div>";
+      test.innerHTML = output;
+      if(pos > 5){
+			$("#removeque").show();
+			$("#removeque").click(function(){
+			remove_que(pos);
+		});
+	  }
+    }
+}
+    function checkAnswer() {
+      if (!$('input[name=choices]').is(":checked")) {
+        alert("Please select the answer!");
+        return false;
+      } else {
+        choices = document.getElementsByName("choices");
+        for (var i = 0; i < choices.length; i++) {
+          if (choices[i].checked) {
+            choice = choices[i].value;
+            var percentage = ((pos + 1) / jsondata.length) * 100;
+            $('.progress-bar').width(percentage + '%').text(Math.round(percentage) + '%');
+          }
+        }
+      }
+      if (choice == jsondata[pos].correct) {
+        ryt++;
+      }
+      pos++;
+      showque();
+    }
+	
+    function remove_que(valueIndex) {
+	jsondata.splice(valueIndex+1, 1);
+	  
+	  var quiz = JSON.parse(localStorage.getItem("queAns"));
+	  var arrIndex = null;
+	  
+	  for(var i=0; i < quiz.length; i++) {
+	  if(valueIndex+1 == quiz[i].queNo){
+			arrIndex = i;
+			break;
+		}
+	  }
+	  if(arrIndex != null) {
+		quiz.splice(arrIndex, 1);
+	  }
+	  var newLength = oldjson + 1;
+	  for(var i=0; i < quiz.length; i++) {
+		quiz[i].queNo = newLength;
+		newLength++;
+	  }
+	  localStorage.setItem("queAns", JSON.stringify(quiz));
+	  window.location.reload();
+    }	
+
+    $(function() {
+      $("#dialog").dialog({
+        autoOpen: false,
+		closeOnEscape : false,
+		modal: true,
+        show: {
+          effect: "fade",
+          duration: 500
+        },
+        hide: {
+          effect: "fade",
+          duration: 500
+        }
+      });
+      $("#add").click(function() {
+        $("#dialog").dialog("open");
+      });
+    });
+
+    function add_que() {
+	   existing_que = JSON.parse(localStorage.getItem("queAns"));
+	  if (existing_que  == null ) existing_que = [];
+      var Question = document.getElementById("que").value;
+      var Option_A = document.getElementById("option1").value;
+      var Option_B = document.getElementById("option2").value;
+      var Option_C = document.getElementById("option3").value;
+      var Option_D = document.getElementById("option4").value;
+      var correctAns = document.getElementById("corr").value;
+	  if((Question && Option_A && Option_B && Option_C && Option_D && correctAns) == ""){
+	  alert("Please Enter all the values");
+	  }else{
+      existing_que.push({
+		queNo: (jsondata.length + 1),
+        Question: Question,
+        A: Option_A,
+        B: Option_B,
+        C: Option_C,
+        D: Option_D,
+        corr: correctAns
+      });
+      localStorage.setItem("queAns", JSON.stringify(existing_que));
+      alert("Question Added Successfully...");
+	  window.location.reload();
+	  }
+	}
+  </script>
+</head>
+
+<body>
+<div class="col-md-6 col-md-offset-3">
+	
+	<h2 id="test_status"></h2>
+<div  id="progbar" class="progress">
+    <div class="progress-bar"></div>
+</div>	
+	<div id="test"></div>
+
+<div class="form-group" id="intro">
+  <center><h1> Welcome to Quiz </h1></center>
+  <label id="usrname"><h4>Enter Your Name :</h4></label>
+  <input type="text" class="form-control" id="txtname">
+</div>	
+
+<center>
+	<button id="start"> Start your Test </button>
+	<button id="ans" onclick="checkAnswer()">Submit Answer</button>
+	<button id='removeque'>Remove Question</button>
+    <button id="reset" onclick="window.location.reload();"> Reset Quiz </button>
+    <button id="add"> Add New Question </button>
+	<!--<button id="clear" onclick="localStorage.clear();"> Clear </button>-->
+</center>
+
+    <div id="dialog" title="Add New Question">
+      <form>
+        Your Question :
+        <br>
+        <input type="text" id="que">
+        <br> your option 1:
+        <br>
+        <input type="text" id="option1">
+        <br> your option 2:
+        <br>
+        <input type="text" id="option2">
+        <br> your option 3:
+        <br>
+        <input type="text" id="option3">
+        <br> your option 4:
+        <br>
+        <input type="text" id="option4">
+		<br> Correct option:
+        <br>
+        <input type="text" id="corr">
+        <br>
+        <br>
+		<input type="button" id="save"onclick="add_que();" value="Save">
+      </form>
+      
+    </div>
+	
+</div>
+
+</body>
+</html>

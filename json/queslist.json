@@ -1,0 +1,56 @@
+{
+	"questions": [{
+			"que": "What is 10 + 4?",
+			"chA": 12,
+			"chB": 14,
+			"chC": 11,
+			"chD": 16,
+			"correct": "B"
+		},
+
+		{
+			"que": "What is 20 - 9?",
+			"chA": 7,
+			"chB": 13,
+			"chC": 11,
+			"chD": 10,
+			"correct": "C"
+		},
+
+		{
+			"que": "What is 7 * 3?",
+			"chA": 21,
+			"chB": 24,
+			"chC": 25,
+			"chD": 20,
+			"correct": "A"
+		},
+
+		{
+			"que": "What is 8 / 2? ",
+			"chA": 10,
+			"chB": 2,
+			"chC": 6,
+			"chD": 4,
+			"correct": "D"
+		},
+
+		{
+			"que": "What is 4 / 2? ",
+			"chA": 1,
+			"chB": 2,
+			"chC": 6,
+			"chD": 4,
+			"correct": "B"
+		},
+
+		{
+			"que": "What is 10 / 2? ",
+			"chA": 3,
+			"chB": 8,
+			"chC": 5,
+			"chD": 4,
+			"correct": "C"
+		}
+	]
+}
